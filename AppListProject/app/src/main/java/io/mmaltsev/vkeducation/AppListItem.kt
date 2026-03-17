@@ -1,5 +1,5 @@
 package io.mmaltsev.vkeducation
-import io.mmaltsev.vkeducation.ui.theme.VkEducationTheme
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,17 +26,18 @@ import coil3.compose.AsyncImage
 @Composable
 fun AppListItem(
     app: App,
-    onClick: () -> Unit,
+    onItemClick: () -> Unit,
+    onIconClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClick = onItemClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Иконка приложения
+        // Иконка с отдельным clickable
         AsyncImage(
             model = app.iconUrl,
             contentDescription = null,
@@ -44,11 +45,11 @@ fun AppListItem(
             modifier = Modifier
                 .size(56.dp)
                 .clip(RoundedCornerShape(12.dp))
+                .clickable { onIconClick() }
         )
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Информация о приложении
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -71,7 +72,10 @@ fun AppListItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = getCategoryText(app.category),
+                text = when (app.category) {
+                    Category.APP -> "Приложение"
+                    Category.GAME -> "Игра"
+                },
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.secondary,
                 maxLines = 1
@@ -80,28 +84,14 @@ fun AppListItem(
     }
 }
 
-@Composable
-private fun getCategoryText(category: Category): String = when (category) {
-    Category.APP -> "Приложение"
-    Category.GAME -> "Игра"
-}
-
 @Preview
 @Composable
 private fun PreviewAppListItem() {
-    io.mmaltsev.vkeducation.ui.theme.VkEducationTheme {  // Полный путь к теме
+    io.mmaltsev.vkeducation.ui.theme.VkEducationTheme {
         AppListItem(
-            app = App(
-                name = "СберБанк Онлайн – с Салютом",
-                developer = "Больше чем банк",
-                category = Category.APP,
-                ageRating = 0,
-                size = 100f,
-                iconUrl = "",
-                screenshotUrlList = emptyList(),
-                description = ""
-            ),
-            onClick = {}
+            app = AppDataProvider.getAppsList().first(),
+            onItemClick = {},
+            onIconClick = {}
         )
     }
 }

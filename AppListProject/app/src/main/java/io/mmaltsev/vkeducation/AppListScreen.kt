@@ -1,141 +1,145 @@
 package io.mmaltsev.vkeducation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 
 @Composable
 fun AppListScreen(
     onAppClick: (App) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AppListViewModel = viewModel()
 ) {
-    val apps = getAppsList()
+    val apps by viewModel.apps.collectAsStateWithLifecycle()
+    val snackbarMessage by viewModel.snackbarMessage.collectAsStateWithLifecycle()
+    val loadTime by viewModel.loadTime.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // Заголовок
-        Text(
-            text = "RuStore",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(16.dp)
-        )
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        LazyColumn {
-            items(apps) { app ->
-                AppListItem(
-                    app = app,
-                    onClick = { onAppClick(app) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-            }
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onSnackbarShown()
+        }
+    }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+        ) {
+
+            Header(
+                onIconClick = { viewModel.onAppIconClick("RuStore") },
+                modifier = Modifier.padding(16.dp)
+            )
+
+
+            Text(
+                text = loadTime,
+                fontSize = 10.sp,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            LazyColumn {
+                items(apps) { app ->
+                    AppListItem(
+                        app = app,
+                        onItemClick = { onAppClick(app) },
+                        onIconClick = { viewModel.onAppIconClick(app.name) }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                }
             }
         }
     }
 }
 
-// Захардкоженные данные для списка
-private fun getAppsList(): List<App> = listOf(
-    App(
-        name = "СберБанк Онлайн – с Салютом",
-        developer = "Больше чем банк",
-        category = Category.APP,
-        ageRating = 0,
-        size = 100f,
-        iconUrl = "https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/69/e2/4d/69e24d6e-6b41-1a03-5063-4b77a16c0f21/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x600wa.png",
-        screenshotUrlList = emptyList(),
-        description = "Больше чем банк - это онлайн-банкинг с расширенными возможностями"
-    ),
-    App(
-        name = "Яндекс.Браузер — с Алисой",
-        developer = "Быстрый и безопасный браузер",
-        category = Category.APP,
-        ageRating = 0,
-        size = 80f,
-        iconUrl = "https://play-lh.googleusercontent.com/Zg2EKRmLJZHFx3QLTLPAr6lIv8ES8dkxkLKnxKFBHDB1KiRU3H5lK6tod2u9NWh8WgUhOIA9TXyNrjM8rVN9=w600-h300-pc0xffffff-pd",
-        screenshotUrlList = emptyList(),
-        description = "Быстрый и безопасный браузер с голосовым помощником Алиса"
-    ),
-    App(
-        name = "Почта Mail.ru",
-        developer = "Почтовый клиент для любых ящиков",
-        category = Category.APP,
-        ageRating = 0,
-        size = 120f,
-        iconUrl = "https://www.alladvertising.ru/porridge/154/180/h_424e67926dbad67291455504f1ddc29c",
-        screenshotUrlList = emptyList(),
-        description = "Почтовый клиент для любых ящиков"
-    ),
-    App(
-        name = "Яндекс Навигатор",
-        developer = "Парковки и заправки – по пути",
-        category = Category.APP,
-        ageRating = 0,
-        size = 150f,
-        iconUrl = "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/58/8b/86/588b865f-328d-38e2-0d98-571eb8c91196/AppIcon-0-0-1x_U007epad-0-1-85-220.png/1200x630wa.png",
-        screenshotUrlList = emptyList(),
-        description = "Парковки и заправки – по пути"
-    ),
-    App(
-        name = "Мой МТС",
-        developer = "Мой МТС — центр экосистемы МТС",
-        category = Category.APP,
-        ageRating = 0,
-        size = 90f,
-        iconUrl = "https://is4-ssl.mzstatic.com/image/thumb/Purple114/v4/02/1d/2d/021d2d46-f946-642a-c21e-7b2f1aec9732/AppIcon-0-1x_U007emarketing-0-0-GLES2_U002c0-512MB-sRGB-0-0-0-85-220-0-0-0-8.png/1200x630wa.png",
-        screenshotUrlList = emptyList(),
-        description = "Мой МТС — центр экосистемы МТС"
-    ),
-    App(
-        name = "Яндекс — с Алисой",
-        developer = "Яндекс — поиск всегда под рукой",
-        category = Category.APP,
-        ageRating = 0,
-        size = 70f,
-        iconUrl = "https://i.ytimg.com/vi/pCABnlqZr-w/maxresdefault.jpg",
-        screenshotUrlList = emptyList(),
-        description = "Яндекс — поиск всегда под рукой"
-    ),
-    App(
-        name = "Гильдия Героев: Экшен ММО РПГ",
-        developer = "VK Play",
-        category = Category.GAME,
-        ageRating = 12,
-        size = 223.7f,
-        iconUrl = "https://static.rustore.ru/imgproxy/APsbtHxkVa4MZ0DXjnIkSwFQ_KVIcqHK9o3gHY6pvOQ/preset:web_app_icon_62/plain/https://static.rustore.ru/apk/393868735/content/ICON/3f605e3e-f5b3-434c-af4d-77bc5f38820e.png@webp",
-        screenshotUrlList = listOf(
-            "https://static.rustore.ru/imgproxy/-y8kd-4B6MQ-1OKbAbnoAIMZAzvoMMG9dSiHMpFaTBc/preset:web_scr_lnd_335/plain/https://static.rustore.ru/apk/393868735/content/SCREENSHOT/dfd33017-e90d-4990-aa8c-6f159d546788.jpg@webp",
-            "https://static.rustore.ru/imgproxy/dZCvNtRKKFpzOmGlTxLszUPmwi661IhXynYZGsJQvLw/preset:web_scr_lnd_335/plain/https://static.rustore.ru/apk/393868735/content/SCREENSHOT/60ec4cbc-dcf6-4e69-aa6f-cc2da7de1af6.jpg@webp"
-        ),
-        description = "Легендарный рейд героев в Фэнтези РПГ. Станьте героем гильдии и сразите мастера подземелья!"
-    )
-)
-
-@Preview
 @Composable
-private fun PreviewAppListScreen() {
-    io.mmaltsev.vkeducation.ui.theme.VkEducationTheme {
-        AppListScreen(
-            onAppClick = {}
-        )
+fun Header(
+    onIconClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            AsyncImage(
+                model = "https://brands-prod.cdn-tinkoff.ru/general_logo/rustore.png",
+                contentDescription = "RuStore Logo",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable { onIconClick() }
+            )
+
+            Text(
+                text = "RuStore",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        // Правая часть с кнопками
+        Row {
+            IconButton(onClick = { /* Поиск */ }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Поиск"
+                )
+            }
+
+            IconButton(onClick = { /* Меню */ }) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Меню"
+                )
+            }
+        }
     }
 }
