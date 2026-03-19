@@ -1,4 +1,4 @@
-package io.mmaltsev.vkeducation
+package io.mmaltsev.vkeducation.presentation.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,6 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import io.mmaltsev.vkeducation.domain.App
+import io.mmaltsev.vkeducation.domain.Category
+import io.mmaltsev.vkeducation.presentation.ui.theme.VkEducationTheme
 
 @Composable
 fun AppListItem(
@@ -87,9 +90,20 @@ fun AppListItem(
 @Preview
 @Composable
 private fun PreviewAppListItem() {
-    io.mmaltsev.vkeducation.ui.theme.VkEducationTheme {
+    VkEducationTheme {
+        val mockApp = App(
+            name = "Тестовое Приложение",
+            developer = "VK Education",
+            category = Category.APP,
+            ageRating = 0,
+            size = 100f,
+            iconUrl = "",
+            screenshotUrlList = emptyList(),
+            description = "Описание"
+        )
+
         AppListItem(
-            app = AppDataProvider.getAppsList().first(),
+            app = mockApp,
             onItemClick = {},
             onIconClick = {}
         )

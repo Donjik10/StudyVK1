@@ -1,4 +1,4 @@
-package io.mmaltsev.vkeducation
+package io.mmaltsev.vkeducation.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,8 +15,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import io.mmaltsev.vkeducation.ui.theme.VkEducationTheme
-import io.mmaltsev.vkeducation.*
+import io.mmaltsev.vkeducation.presentation.details.AppDetailsRoute
+import io.mmaltsev.vkeducation.presentation.list.AppListScreen
+import io.mmaltsev.vkeducation.presentation.navigation.*
+import io.mmaltsev.vkeducation.presentation.ui.theme.VkEducationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,12 +60,8 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val appName = backStackEntry.arguments?.getString(APP_NAME_PARAM) ?: ""
 
-            // Используем единый источник данных
-            val app = AppDataProvider.getAppsList().find { it.name == appName }
-                ?: AppDataProvider.getDefaultApp()
-
-            AppDetailsScreen(
-                app = app,
+            AppDetailsRoute(
+                appName = appName,
                 onBackClick = {
                     navController.navigateUp()
                 },

@@ -1,4 +1,4 @@
-package io.mmaltsev.vkeducation
+package io.mmaltsev.vkeducation.presentation.navigation
 
 // Константы для навигации
 const val APP_LIST_SCREEN = "app_list"

@@ -1,4 +1,4 @@
-package io.mmaltsev.vkeducation
+package io.mmaltsev.vkeducation.domain
 
 data class App(
     val name: String,
@@ -8,5 +8,5 @@ data class App(
     val size: Float,
     val iconUrl: String,
     val screenshotUrlList: List<String>,
-    val description: String,
+    val description: String
 )
