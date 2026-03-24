@@ -106,8 +106,8 @@ fun AppDetailsScreen(
 @Composable
 private fun Preview() {
     VkEducationTheme {
-
         val mockApp = App(
+            id = "1",
             name = "Тестовое Приложение",
             developer = "VK Education",
             category = Category.APP,

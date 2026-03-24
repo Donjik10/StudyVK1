@@ -1,6 +1,7 @@
 package io.donjik.vkeducation.domain
 
 data class App(
+    val id: String,
     val name: String,
     val developer: String,
     val category: Category,

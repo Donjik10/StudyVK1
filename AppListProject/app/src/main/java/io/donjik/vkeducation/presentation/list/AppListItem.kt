@@ -92,6 +92,7 @@ fun AppListItem(
 private fun PreviewAppListItem() {
     VkEducationTheme {
         val mockApp = App(
+            id = "1",
             name = "Тестовое Приложение",
             developer = "VK Education",
             category = Category.APP,

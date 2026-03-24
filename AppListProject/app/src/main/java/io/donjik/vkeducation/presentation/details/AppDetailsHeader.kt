@@ -98,6 +98,7 @@ private fun getCategoryText(category: Category): String = when (category) {
 @Composable
 private fun Preview() {
     val app = App(
+        id = "1",
         name = "Гильдия Героев: Экшен ММО РПГ",
         developer = "VK Play",
         category = Category.GAME,
