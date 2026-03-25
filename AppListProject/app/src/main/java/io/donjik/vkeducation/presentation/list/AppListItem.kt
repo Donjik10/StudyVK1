@@ -1,5 +1,5 @@
 package io.donjik.vkeducation.presentation.list
-
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +25,7 @@ import coil3.compose.AsyncImage
 import io.donjik.vkeducation.domain.App
 import io.donjik.vkeducation.domain.Category
 import io.donjik.vkeducation.presentation.ui.theme.VkEducationTheme
+
 
 @Composable
 fun AppListItem(
@@ -53,6 +54,7 @@ fun AppListItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -60,10 +62,20 @@ fun AppListItem(
                 text = app.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = app.category,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.primary,
                 maxLines = 1
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             Text(
                 text = app.developer,
@@ -75,13 +87,11 @@ fun AppListItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = when (app.category) {
-                    Category.APP -> "Приложение"
-                    Category.GAME -> "Игра"
-                },
+                text = app.description,
                 fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.secondary,
-                maxLines = 1
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -95,7 +105,7 @@ private fun PreviewAppListItem() {
             id = "1",
             name = "Тестовое Приложение",
             developer = "VK Education",
-            category = Category.APP,
+            category = "Тест",
             ageRating = 0,
             size = 100f,
             iconUrl = "",

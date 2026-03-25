@@ -110,7 +110,7 @@ private fun Preview() {
             id = "1",
             name = "Тестовое Приложение",
             developer = "VK Education",
-            category = Category.APP,
+            category = "Тест",
             ageRating = 12,
             size = 150f,
             iconUrl = "",
