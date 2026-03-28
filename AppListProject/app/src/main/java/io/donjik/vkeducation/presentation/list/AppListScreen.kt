@@ -41,7 +41,7 @@ fun AppListScreen(
     }
 
     Scaffold(
-
+        modifier = modifier,
         topBar = {
             Column(
                 modifier = Modifier

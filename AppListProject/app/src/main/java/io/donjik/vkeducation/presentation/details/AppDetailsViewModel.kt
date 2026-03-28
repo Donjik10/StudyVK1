@@ -19,9 +19,9 @@ class AppDetailsViewModel @Inject constructor(
     private val _app = MutableStateFlow<App?>(null)
     val app: StateFlow<App?> = _app.asStateFlow()
 
-    fun loadApp(appName: String) {
+    fun loadApp(appId: String) {
         viewModelScope.launch {
-            _app.value = repository.getAppByName(appName) ?: repository.getDefaultApp()
+            _app.value = repository.getAppById(appId) ?: repository.getDefaultApp()
         }
     }
 }

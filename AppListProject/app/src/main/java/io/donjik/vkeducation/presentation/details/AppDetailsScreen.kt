@@ -18,13 +18,13 @@ import io.donjik.vkeducation.presentation.ui.theme.VkEducationTheme
 
 @Composable
 fun AppDetailsRoute(
-    appName: String,
+    appId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(appName) {
-        viewModel.loadApp(appName)
+    LaunchedEffect(appId) {
+        viewModel.loadApp(appId)
     }
 
     val appState by viewModel.app.collectAsStateWithLifecycle()

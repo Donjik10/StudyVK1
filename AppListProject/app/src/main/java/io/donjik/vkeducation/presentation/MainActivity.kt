@@ -51,23 +51,20 @@ fun AppNavigation() {
         composable(APP_LIST_ROUTE) {
             AppListScreen(
                 onAppClick = { app ->
-                    navController.navigate(appDetailsRoute(app.name))
-                },
-                modifier = Modifier.safeDrawingPadding(),
+                    navController.navigate(appDetailsRoute(app.id)) },
+                modifier = Modifier.safeDrawingPadding()
             )
         }
-
         composable(
             route = APP_DETAILS_ROUTE,
-            arguments = listOf(navArgument(APP_NAME_PARAM) { type = NavType.StringType })
+            arguments = listOf(navArgument(APP_ID_PARAM) { type = NavType.StringType })
         ) { backStackEntry ->
-            val appName = backStackEntry.arguments?.getString(APP_NAME_PARAM) ?: ""
+            val appId = backStackEntry.arguments?.getString(APP_ID_PARAM) ?: ""
             AppDetailsRoute(
-                appName = appName,
-                onBackClick = {
-                    navController.navigateUp()
-                },
-                modifier = Modifier.safeDrawingPadding(),
+
+                appId = appId,
+                onBackClick = { navController.navigateUp() },
+                modifier = Modifier.safeDrawingPadding()
             )
         }
     }

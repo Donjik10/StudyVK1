@@ -20,8 +20,8 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAppByName(name: String): App? {
-        return getApps().find { it.name == name }
+    override suspend fun getAppById(id: String): App? {
+        return getApps().find { it.id == id }
     }
 
     override suspend fun getDefaultApp(): App {
