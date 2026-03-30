@@ -9,31 +9,39 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.donjik.vkeducation.R
-import io.donjik.vkeducation.domain.Category
+import androidx.compose.foundation.layout.Box
 import io.donjik.vkeducation.domain.App
 import io.donjik.vkeducation.presentation.ui.theme.VkEducationTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.getValue
 
 @Composable
 fun AppDetailsRoute(
-    appId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(appId) {
-        viewModel.loadApp(appId)
-    }
+    val app by viewModel.app.collectAsState()
 
-    val appState by viewModel.app.collectAsStateWithLifecycle()
-    appState?.let { loadedApp ->
+    if (app != null) {
         AppDetailsScreen(
-            app = loadedApp,
+            app = app!!,
             onBackClick = onBackClick,
             modifier = modifier
         )
+    } else {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     }
 }
 
