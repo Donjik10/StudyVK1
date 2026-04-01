@@ -13,7 +13,8 @@ fun App.toEntity(): AppDetailsEntity {
         size = size,
         iconUrl = iconUrl,
         screenshotUrlList = screenshotUrlList,
-        description = description
+        description = description,
+        isInWishlist = isInWishlist
     )
 }
 
@@ -27,6 +28,7 @@ fun AppDetailsEntity.toDomain(): App {
         size = size,
         iconUrl = iconUrl,
         screenshotUrlList = screenshotUrlList,
-        description = description
+        description = description,
+        isInWishlist = isInWishlist
     )
 }

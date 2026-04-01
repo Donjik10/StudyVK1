@@ -12,7 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 class AppRepositoryImpl @Inject constructor(
     private val api: AppApi,
     private val appDetailsDao: AppDetailsDao
@@ -28,10 +31,9 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAppById(id: String): App? {
-        Log.d("ThreadCheck", "start thread = ${Thread.currentThread().name}")
+        Log.d("AppRepository", "getAppById start, id = $id")
 
         val cachedApp = withContext(Dispatchers.IO) {
-            Log.d("ThreadCheck", "db read thread = ${Thread.currentThread().name}")
             appDetailsDao.getAppDetails(id).first()
         }
 
@@ -42,19 +44,17 @@ class AppRepositoryImpl @Inject constructor(
 
         return try {
             Log.d("AppRepository", "Карточка $id не найдена в БД, идем В СЕТЬ")
-            Log.d("ThreadCheck", "before network thread = ${Thread.currentThread().name}")
 
             val networkApp = api.getAppDetails(id).dtoToDomain()
 
             withContext(Dispatchers.IO) {
-                Log.d("ThreadCheck", "db insert thread = ${Thread.currentThread().name}")
                 appDetailsDao.insertAppDetails(networkApp.toEntity())
                 Log.d("AppRepository", "Карточка $id сохранена В БД")
             }
 
             networkApp
         } catch (e: Exception) {
-            Log.e("AppRepository", "Ошибка загрузки карточки: ${e.message}")
+            Log.e("AppRepository", "Ошибка загрузки карточки: ${e.message}", e)
             null
         }
     }
@@ -62,5 +62,22 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun getDefaultApp(): App {
         return getApps().lastOrNull()
             ?: throw IllegalStateException("Список пуст")
+    }
+    override fun observeAppDetails(id: String): Flow<App> {
+        return appDetailsDao.getAppDetails(id)
+            .filterNotNull()
+            .map { it.toDomain() }
+    }
+
+    override suspend fun toggleWishlist(id: String) {
+        val currentEntity = withContext(Dispatchers.IO) {
+            appDetailsDao.getAppDetails(id).first()
+        }
+
+        currentEntity?.let { entity ->
+            withContext(Dispatchers.IO) {
+                appDetailsDao.updateWishlistStatus(id, !entity.isInWishlist)
+            }
+        }
     }
 }

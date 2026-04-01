@@ -13,6 +13,7 @@ fun AppDto.toDomain(): App {
         size = this.size,
         iconUrl = this.iconUrl,
         screenshotUrlList = this.screenshotUrlList,
-        description = this.description
+        description = this.description,
+        isInWishlist = false
     )
 }

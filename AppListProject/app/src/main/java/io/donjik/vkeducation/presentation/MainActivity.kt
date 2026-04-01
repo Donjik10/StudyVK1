@@ -58,7 +58,7 @@ fun AppNavigation() {
         composable(
             route = APP_DETAILS_ROUTE,
             arguments = listOf(navArgument(APP_ID_PARAM) { type = NavType.StringType })
-        ){
+        ) {
             AppDetailsRoute(
                 onBackClick = { navController.navigateUp() },
                 modifier = Modifier.safeDrawingPadding()

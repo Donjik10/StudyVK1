@@ -27,20 +27,37 @@ fun AppDetailsRoute(
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel()
 ) {
-    val app by viewModel.app.collectAsState()
+    val state by viewModel.state.collectAsState()
 
-    if (app != null) {
-        AppDetailsScreen(
-            app = app!!,
-            onBackClick = onBackClick,
-            modifier = modifier
-        )
-    } else {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+    when {
+        state.isLoading -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        state.isError || state.app == null -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Ошибка загрузки")
+            }
+        }
+
+        else -> {
+            val app = state.app ?: return
+
+            AppDetailsScreen(
+                app = app,
+                isInWishlist = state.isInWishlist,
+                onWishlistClick = viewModel::toggleWishlist,
+                onBackClick = onBackClick,
+                modifier = modifier
+            )
         }
     }
 }
@@ -48,6 +65,8 @@ fun AppDetailsRoute(
 @Composable
 fun AppDetailsScreen(
     app: App,
+    isInWishlist: Boolean,
+    onWishlistClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -61,7 +80,10 @@ fun AppDetailsScreen(
             onShareClick = {
                 Toast.makeText(context, underDevelopmentText, Toast.LENGTH_SHORT).show()
             },
+            isInWishlist = isInWishlist,
+            onWishlistClick = onWishlistClick,
         )
+
         Spacer(Modifier.height(8.dp))
         AppDetailsHeader(
             app = app,
@@ -123,11 +145,14 @@ private fun Preview() {
             size = 150f,
             iconUrl = "",
             screenshotUrlList = emptyList(),
-            description = "Это описание для превью Compose."
+            description = "Это описание для превью Compose.",
+            isInWishlist = false
         )
 
         AppDetailsScreen(
             app = mockApp,
+            isInWishlist = false,
+            onWishlistClick = {},
             onBackClick = {},
             modifier = Modifier.fillMaxSize(),
         )
