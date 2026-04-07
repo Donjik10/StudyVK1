@@ -25,36 +25,34 @@ class AppRepositoryImpl @Inject constructor(
         return try {
             api.getCatalog().map { it.dtoToDomain() }
         } catch (e: Exception) {
-            Log.e("NetworkError", "Ошибка загрузки списка: ${e.message}")
+            println("Ошибка загрузки списка: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun getAppById(id: String): App? {
-        Log.d("AppRepository", "getAppById start, id = $id")
-
         val cachedApp = withContext(Dispatchers.IO) {
             appDetailsDao.getAppDetails(id).first()
         }
 
         if (cachedApp != null) {
-            Log.d("AppRepository", "Карточка $id загружена ИЗ БД")
+            println("Карточка $id загружена ИЗ БД")
             return cachedApp.toDomain()
         }
 
         return try {
-            Log.d("AppRepository", "Карточка $id не найдена в БД, идем В СЕТЬ")
+            println("Карточка $id не найдена в БД, идем В СЕТЬ")
 
             val networkApp = api.getAppDetails(id).dtoToDomain()
 
             withContext(Dispatchers.IO) {
                 appDetailsDao.insertAppDetails(networkApp.toEntity())
-                Log.d("AppRepository", "Карточка $id сохранена В БД")
+                println("Карточка $id сохранена В БД")
             }
 
             networkApp
         } catch (e: Exception) {
-            Log.e("AppRepository", "Ошибка загрузки карточки: ${e.message}", e)
+            println("Ошибка загрузки карточки: ${e.message}")
             null
         }
     }
